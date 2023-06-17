@@ -8,7 +8,7 @@ export function Logo() {
       letterSpacing="tight"
       w="64"
     >
-      MyApp
+      myTank
       <Text as="span" ml="1" color="blue.500">
         .
       </Text>
