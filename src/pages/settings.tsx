@@ -1,23 +1,77 @@
-import { useContext, useEffect, useState } from 'react'
-import {
-  Box,
-  Flex,
-  SimpleGrid,
-  Text,
-  Input,
-  InputGroup,
-  InputRightElement,
-  Button,
-} from '@chakra-ui/react'
+import { useContext, useEffect } from 'react'
+import { Box, Flex, SimpleGrid, Text, Stack, Button } from '@chakra-ui/react'
 import { Header } from '../components/Header'
 import { Sidebar } from '../components/Sidebar'
 import { AuthContext, signOut } from '../contexts/AuthContext'
 import { api } from '../services/apiClient'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { Input } from '../components/Form/Input'
+
+import * as yup from 'yup'
+
+interface IChangeUserInformation {
+  name: string
+  email: string
+  old_password: string
+  password: string
+  password_confirmation: string
+}
+
+const changeUserInformation = yup.object().shape({
+  name: yup.string().required('Nome obrigatório'),
+  email: yup.string().email('E-mail inválido').required('E-mail obrigatório'),
+  old_password: yup.string(),
+  password: yup.string().optional(),
+  password_confirmation: yup
+    .string()
+    .oneOf([yup.ref('password'), null], 'Senhas devem ser idênticas')
+    .when('password', {
+      is: true,
+      then: yup
+        .string()
+        .required('Campo de confirmação de senha é obrigatório'),
+    }),
+})
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext)
-  const [showPassword, setShowPassword] = useState(false)
-  const handleClick = () => setShowPassword(!showPassword)
+
+  const { register, handleSubmit, formState } = useForm({
+    resolver: yupResolver(changeUserInformation),
+  })
+  const { errors } = formState
+
+  async function handleUserForm({
+    email,
+    password,
+    name,
+    old_password,
+    password_confirmation,
+  }: IChangeUserInformation) {
+    try {
+      return api.put('/users/profile', {
+        email,
+        password,
+        name,
+        old_password,
+        password_confirmation,
+      })
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const handleUserInformation: SubmitHandler<any> = async values => {
+    const data = {
+      name: values.name,
+      email: values.email,
+      old_password: values.old_password,
+      password: values.password,
+      password_confirmation: values.password_confirmation,
+    }
+    await handleUserForm(data)
+  }
 
   useEffect(() => {
     api
@@ -35,26 +89,70 @@ export default function Dashboard() {
       <Flex w="100%" my="6" maxWidth={1480} mx="auto" px="6">
         <Sidebar />
         <SimpleGrid flex="1" gap="4" minChildWidth="320px">
-          <Box p={['6', '8']} bg="gray.800" borderRadius={8} pb="4" h="300">
-            <Text
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              fontSize="lg"
-              mb="4"
+          <Box p={['6', '8']} bg="gray.800" borderRadius={8} pb="4" h="450">
+            <Flex
+              flexDir="column"
+              as="form"
+              onSubmit={handleSubmit(handleUserInformation)}
             >
-              Informações do usuário {user?.name}!
-            </Text>
+              <Text
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                fontSize="lg"
+                mb="4"
+              >
+                Informações do usuário {user?.name}!
+              </Text>
 
-            <Text>Senha</Text>
-            <InputGroup size="md">
-              <Input pr="4.5rem" type={showPassword ? 'text' : 'password'} />
-              <InputRightElement width="4.5rem">
-                <Button h="1.75rem" size="sm" onClick={handleClick}>
-                  {showPassword ? 'Hide' : 'Show'}
-                </Button>
-              </InputRightElement>
-            </InputGroup>
+              <Stack spacing="4">
+                <Input
+                  name="name"
+                  type="text"
+                  label="Nome"
+                  error={errors.name}
+                  {...register('name')}
+                />
+                <Input
+                  name="email"
+                  type="text"
+                  label="Email"
+                  error={errors.email}
+                  {...register('email')}
+                />
+                <Input
+                  name="old_password"
+                  type="password"
+                  label="Senha antiga"
+                  error={errors.old_password}
+                  {...register('old_password')}
+                />
+                <Input
+                  name="password"
+                  type="password"
+                  label="Senha"
+                  error={errors.password}
+                  {...register('password')}
+                />
+                <Input
+                  name="password_confirmation"
+                  type="password"
+                  label="Confirmar Senha"
+                  error={errors.password_confirmation}
+                  {...register('password_confirmation')}
+                />
+              </Stack>
+
+              <Button
+                type="submit"
+                mt="6"
+                colorScheme="blue"
+                w="150px"
+                isLoading={formState.isSubmitting}
+              >
+                Mudar
+              </Button>
+            </Flex>
           </Box>
         </SimpleGrid>
       </Flex>
