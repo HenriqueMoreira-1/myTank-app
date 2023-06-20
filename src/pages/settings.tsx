@@ -44,26 +44,29 @@ export default function Dashboard() {
   })
   const { errors, isLoading } = formState
 
-  async function handleUserForm({
+  const handleUserForm = async ({
     email,
     password,
     name,
     old_password,
     password_confirmation,
-  }: IChangeUserInformation) {
-    try {
-      toast.success('Informações alteradas com sucesso!')
-      Router.push('/dashboard')
-      return api.put('/users/profile', {
+  }: IChangeUserInformation) => {
+    api
+      .put('/users/profile', {
         email,
         password,
         name,
         old_password,
         password_confirmation,
       })
-    } catch (err) {
-      console.log(err)
-    }
+      .then(() => {
+        toast.success('Informações alteradas com sucesso!')
+        Router.push('/dashboard')
+      })
+      .catch(err => {
+        toast.error('Erro ao alterar informações!')
+        console.error(err)
+      })
   }
 
   const handleUserInformation: SubmitHandler<any> = async values => {
@@ -134,14 +137,14 @@ export default function Dashboard() {
                 <Input
                   name="password"
                   type="password"
-                  label="Senha"
+                  label="Nova Senha"
                   error={errors.password}
                   {...register('password')}
                 />
                 <Input
                   name="password_confirmation"
                   type="password"
-                  label="Confirmar Senha"
+                  label="Confirmar Nova Senha"
                   error={errors.password_confirmation}
                   {...register('password_confirmation')}
                 />
