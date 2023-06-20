@@ -4,6 +4,8 @@ import { AuthProvider } from '../contexts/AuthContext'
 import { theme } from '../styles/theme'
 import { SidebarDrawerProvider } from '../contexts/SidebarDrawerContext'
 import { queryClient } from '../services/queryClient'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -12,6 +14,7 @@ function MyApp({ Component, pageProps }) {
         <AuthProvider>
           <SidebarDrawerProvider>
             <Component {...pageProps} />
+            <ToastContainer />
           </SidebarDrawerProvider>
         </AuthProvider>
       </ChakraProvider>

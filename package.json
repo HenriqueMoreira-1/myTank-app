@@ -13,7 +13,6 @@
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
     "@hookform/resolvers": "^2.0.0",
-    "react-hook-form": "^7.0.1",
     "axios": "^0.21.1",
     "framer-motion": "^4.0.3",
     "jwt-decode": "^3.1.2",
@@ -21,6 +20,7 @@
     "nookies": "^2.5.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-hook-form": "^7.0.1",
     "react-icons": "^4.2.0",
     "react-query": "^3.13.4",
     "yup": "^0.32.9"

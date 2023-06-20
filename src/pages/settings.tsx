@@ -7,6 +7,8 @@ import { api } from '../services/apiClient'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { Input } from '../components/Form/Input'
+import Router from 'next/router'
+import { toast } from 'react-toastify'
 
 import * as yup from 'yup'
 
@@ -40,7 +42,7 @@ export default function Dashboard() {
   const { register, handleSubmit, formState } = useForm({
     resolver: yupResolver(changeUserInformation),
   })
-  const { errors } = formState
+  const { errors, isLoading } = formState
 
   async function handleUserForm({
     email,
@@ -50,6 +52,8 @@ export default function Dashboard() {
     password_confirmation,
   }: IChangeUserInformation) {
     try {
+      toast.success('Informações alteradas com sucesso!')
+      Router.push('/dashboard')
       return api.put('/users/profile', {
         email,
         password,
@@ -148,7 +152,7 @@ export default function Dashboard() {
                 mt="6"
                 colorScheme="blue"
                 w="150px"
-                isLoading={formState.isSubmitting}
+                isLoading={isLoading}
               >
                 Mudar
               </Button>
