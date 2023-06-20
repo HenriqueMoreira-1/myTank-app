@@ -93,7 +93,7 @@ export default function Dashboard() {
       <Flex w="100%" my="6" maxWidth={1480} mx="auto" px="6">
         <Sidebar />
         <SimpleGrid flex="1" gap="4" minChildWidth="320px">
-          <Box p={['6', '8']} bg="gray.800" borderRadius={8} pb="4" h="450">
+          <Box p={['6', '8']} bg="gray.800" borderRadius={8} pb="4" h="650">
             <Flex
               flexDir="column"
               as="form"
