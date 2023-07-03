@@ -2,6 +2,7 @@ import { createContext, ReactNode, useEffect, useState } from 'react'
 import Router from 'next/router'
 import { setCookie, parseCookies, destroyCookie } from 'nookies'
 import { api } from '../services/apiClient'
+import { RegisterFormData } from '../pages'
 
 export type User = {
   id: string
@@ -90,6 +91,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(user)
       api.defaults.headers['Authorization'] = `Bearer ${accessToken}`
       Router.push('/dashboard')
+    } catch (err) {
+      signOut()
+    }
+  }
+
+  async function registerUser({
+    email,
+    isAdmin,
+    name,
+    password,
+    roleId,
+  }: RegisterFormData) {
+    try {
+      const response = await api.post('/users', {
+        email,
+        isAdmin,
+        name,
+        password,
+        roleId,
+      })
+
+      const { accessToken } = response.data
+      api.defaults.headers['Authorization'] = `Bearer ${accessToken}`
+      Router.push('/login')
     } catch (err) {
       signOut()
     }

@@ -6,36 +6,27 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { Input } from '../components/Form/Input'
 import { AuthContext } from '../contexts/AuthContext'
 
-export type RegisterFormData = {
-  name: string
+type SignInFormData = {
   email: string
   password: string
-  isAdmin: boolean
-  roleId: string
 }
 
-const registerFormSchema = yup.object().shape({
-  name: yup.string().required('Nome obrigatório'),
+const signInFormSchema = yup.object().shape({
   email: yup.string().required('E-mail obrigatório').email('E-mail inválido'),
   password: yup.string().required('Senha obrigatória'),
-  isAdmin: yup.boolean().required('Campo obrigatório'),
-  roleId: yup.string().uuid(),
 })
 
-export default function Register() {
+export default function SignIn() {
   const { register, handleSubmit, formState } = useForm({
-    resolver: yupResolver(registerFormSchema),
+    resolver: yupResolver(signInFormSchema),
   })
   const { errors } = formState
   const { signIn } = useContext(AuthContext)
 
-  const handleRegister: SubmitHandler<RegisterFormData> = async values => {
+  const handleSignIn: SubmitHandler<SignInFormData> = async values => {
     const data = {
-      name: values.name,
       email: values.email,
       password: values.password,
-      isAdmin: values.isAdmin,
-      roleId: values.roleId,
     }
     await signIn(data)
   }
@@ -50,7 +41,7 @@ export default function Register() {
         p="8"
         borderRadius={8}
         flexDir="column"
-        onSubmit={handleSubmit(handleRegister)}
+        onSubmit={handleSubmit(handleSignIn)}
       >
         <Text
           fontSize={['2xl', '3xl']}
